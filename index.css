@@ -1,0 +1,93 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to left, rgb(124, 46, 46), black);
+    display: flex;
+    height: 100vh;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.part{
+    width: 50%;
+}
+
+
+
+.part-1 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.part-1 .content{
+    background: whitesmoke;
+    border-radius: 10px;
+    padding: 30px;
+    margin: 20px;
+    width: 80%;
+}
+
+.player-title {
+    text-align: center;
+}
+
+.players{
+    display: flex;
+}
+
+.players .player {
+    width: 50%;
+    padding: 20px;
+    background: blueviolet;
+}
+
+.players .player:first-child {
+    margin-right: 20px;
+}
+
+.players .player:last-child {
+    margin-left: 20px;
+}
+
+.players .player span{
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.players .player.active {
+    outline: 10px yellow solid;
+}
+
+.part-2 {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.part-2 .canvas-container{
+    background: whitesmoke;
+    width: 35vw;
+    height: 35vw;
+}
+
+@media screen and (max-width: 992px){
+    body{
+        flex-direction: column;
+    }
+    .part {
+        width: 100%;
+    }
+    .part-1 .content{
+        width: 60%;
+    }
+    .part-1 .content:first-child{
+        display: none;
+    }
+    .part-2 .canvas-container {
+        width: 50vw;
+        height: 50vw;
+    }
+}
