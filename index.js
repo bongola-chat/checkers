@@ -296,13 +296,15 @@ class GameBoard {
     return moves;
   }
 
-  display() {
+  display(player1, player2) {
     this.canvas.width = document.querySelector(".canvas-container").offsetWidth;
     this.canvas.height = document.querySelector(
       ".canvas-container"
     ).offsetWidth;
     this.ctx.fillStyle = "#eac096";
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    let player1Count = 0;
+    let player2Count = 0;
     let _player1CanTakeExist = false;
     let _player2CanTakeExist = false;
     for (var x = 0; x < this.gridLength[0]; x++) {
@@ -314,6 +316,8 @@ class GameBoard {
         this.ctx.fillRect(caseWidth * x, caseWidth * y, caseWidth, caseWidth);
 
         if (caseType === 1 || caseType === 2) {
+          if (caseType === 1) player1Count++;
+          if (caseType === 2) player2Count++;
           this.ctx.fillStyle = caseType === 1 ? "white" : "#556b2f";
           this.ctx.beginPath();
           this.ctx.arc(
@@ -336,6 +340,8 @@ class GameBoard {
           this.ctx.fillStyle = "grey";
           this.ctx.fillRect(caseWidth * x, caseWidth * y, caseWidth, caseWidth);
         } else if (caseType === 4 || caseType === 5) {
+          if (caseType === 4) player1Count++;
+          if (caseType === 5) player2Count++;
           this.ctx.fillStyle = caseType === 4 ? "white" : "#556b2f";
           this.ctx.beginPath();
           this.ctx.arc(
@@ -369,32 +375,47 @@ class GameBoard {
     }
     this.player1CanTakeExist = _player1CanTakeExist;
     this.player2CanTakeExist = _player2CanTakeExist;
+    if (player1Count === 0 || player2Count === 0) {
+      if (player1Count === 0) alert(player2.name + " a gagné");
+      else alert(player1.name + " a gagné");
+    }
   }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  var player1 = new Player(1, "Kadima");
-  var player2 = new Player(2, "Kilo");
+  var player1 = new Player(1, prompt("Nom du premier joueur ?"));
+  var player2 = new Player(2, prompt("Nom du deuxième joueur ?"));
   var game = new GameBoard();
   var canvas = document.querySelector("canvas");
   var ctx = canvas.getContext("2d");
   var selected;
-
-  document.addEventListener("keypress", function (event) {
-    if (event.keyCode === 13) console.log(game.grid);
-  });
 
   canvas.addEventListener("mousedown", function (event) {
     let x = Math.floor(event.offsetX / (canvas.width / 10));
     let y = Math.floor(event.offsetY / (canvas.width / 10));
     let caseType = game.grid[y][x];
     let pieceCanTake = game.pieceCanTake(x, y);
+    let selectedCaseType = !!selected
+      ? game.grid[selected[1]][selected[0]]
+      : undefined;
+    let selectedPieceCanTake = !!selected
+      ? game.pieceCanTake(selected[0], selected[1])
+      : false;
+    let queenPreviousMoveCases = !!selected
+      ? selectedCaseType === 4 || selectedCaseType === 5
+        ? game.queenMove(selected[0], selected[1])
+        : []
+      : [];
+    let queenTakePreviousMoves = !!selected
+      ? (selectedCaseType === 4 || selectedCaseType === 5) &&
+        selectedPieceCanTake
+        ? game.pieceCanTakeMove(selected[0], selected[1])
+        : []
+      : [];
     console.log([x, y]);
     console.log(game.pieceCanTake(x, y));
 
     if (caseType === 3) {
-      let selectedCaseType = game.grid[selected[1]][selected[0]];
-      let selectedPieceCanTake = game.pieceCanTake(selected[0], selected[1]);
       console.log("Piece ", selected);
       console.log("selectedPieceCanTake ", selectedPieceCanTake);
       // verify if must take
@@ -432,7 +453,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // remove previous selection
     if (selected !== undefined) {
-      let selectedCaseType = game.grid[selected[1]][selected[0]];
       if (selectedCaseType === 1 || selectedCaseType === 2) {
         let previousMoveCases = [
           [selected[0] + 1, selected[1] - 1],
@@ -459,7 +479,9 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         }
       } else if (selectedCaseType === 4 || selectedCaseType === 5) {
-        let previousMoveCases = game.queenMove(selected[0], selected[1]);
+        let previousMoveCases = selectedPieceCanTake
+          ? [...queenPreviousMoveCases, ...queenTakePreviousMoves]
+          : queenPreviousMoveCases;
         for (let i = 0; i < previousMoveCases.length; i++) {
           let moveCase = previousMoveCases[i];
           if (
@@ -534,7 +556,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function draw() {
     player1.display();
     player2.display();
-    game.display();
+    game.display(player1, player2);
     requestAnimationFrame(draw);
   }
 

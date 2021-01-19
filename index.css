@@ -87,7 +87,7 @@ body {
         display: none;
     }
     .part-2 .canvas-container {
-        width: 50vw;
-        height: 50vw;
+        width: 90vw;
+        height: 90vw;
     }
 }
